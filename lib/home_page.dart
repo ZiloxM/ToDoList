@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:todo_list/category/category_view.dart';
-import 'package:todo_list/components/Divider.dart';
+import 'package:todo_list/components/custom_divider.dart';
 import 'package:todo_list/components/cab.dart';
 import 'package:todo_list/components/fab.dart';
-import 'package:todo_list/list_view.dart';
+import 'package:todo_list/TaskList.dart';
 import 'package:todo_list/task_model.dart';
 import 'package:todo_list/task_sheet.dart';
 
@@ -52,7 +52,7 @@ class _HomePageState extends State<HomePage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const CategoryView(),
-          const CD(),
+          const CustomDivider(),
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 20),

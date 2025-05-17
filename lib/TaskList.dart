@@ -31,7 +31,7 @@ class TaskList extends StatelessWidget {
           time: task.formattedTime(context),
           date: task.formattedDate,
           onDismissed: (dir) {
-            onDismissed(index); // 👉 این مهمه
+            onDismissed(index);
           },
         );
       }).toList(),

@@ -16,8 +16,8 @@ class FAB extends StatelessWidget {
         borderRadius: BorderRadius.circular(15),
         elevation: 10,
         child: Container(
-          width: 70,
-          height: 70,
+          width: 60,
+          height: 60,
           decoration: BoxDecoration(
             gradient: const LinearGradient(
               colors: [
@@ -30,7 +30,10 @@ class FAB extends StatelessWidget {
             borderRadius: BorderRadius.circular(15),
           ),
           child: const Center(
-            child: Icon(Icons.add, color: Colors.white),
+            child: Icon(
+              Icons.add,
+              color: Colors.white,
+            ),
           ),
         ),
       ),
