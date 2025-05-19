@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:todo_list/category/category_sheet.dart';
 import 'package:todo_list/components/calendar.dart';
 import 'package:todo_list/components/time.dart';
-import 'package:todo_list/task_model.dart';
+import 'package:another_flushbar/flushbar.dart';
 
 class TaskSheet extends StatefulWidget {
   const TaskSheet({super.key});
@@ -15,6 +16,14 @@ class _TaskSheetState extends State<TaskSheet> {
   final taskController = TextEditingController();
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
+  final List<String> categories = [
+    'Work',
+    'Study',
+    'Personal',
+    'Shopping',
+    'Other'
+  ];
+  String? selectedCategory;
 
   Future<void> _pickTime() async {
     final picked = await showCustomCupertinoTimePicker(
@@ -82,82 +91,114 @@ class _TaskSheetState extends State<TaskSheet> {
             /// Date & Time pickers
             Row(
               children: [
+                // Date
                 Expanded(
-                  child: GestureDetector(
+                  child: TextField(
+                    readOnly: true,
                     onTap: () async {
                       final pickedDate = await showDialog<DateTime>(
                         context: context,
                         builder: (context) => const Calendar(),
                       );
                       if (pickedDate != null) {
-                        setState(
-                          () {
-                            selectedDate = pickedDate;
-                          },
-                        );
+                        setState(() {
+                          selectedDate = pickedDate;
+                        });
                       }
                     },
-                    child: Container(
-                      padding: const EdgeInsets.all(14),
-                      decoration: BoxDecoration(
-                        color: const Color(0xfff5f5f5),
+                    enabled: true,
+                    decoration: InputDecoration(
+                      hintText: "Pick date",
+                      filled: true,
+                      fillColor: const Color(0xfff5f5f5),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
+                      border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide.none,
                       ),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.calendar_today,
-                            color: Colors.deepOrange,
-                            size: 20,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            selectedDate != null
-                                ? DateFormat('yyyy/MM/dd').format(selectedDate!)
-                                : "Pick date",
-                            style: const TextStyle(
-                              color: Color(0xff555555),
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
+                      prefixIcon: const Icon(
+                        Icons.calendar_today,
+                        color: Colors.deepOrange,
                       ),
+                    ),
+                    controller: TextEditingController(
+                      text: selectedDate != null
+                          ? DateFormat('yyyy/MM/dd').format(selectedDate!)
+                          : '',
                     ),
                   ),
                 ),
+
                 const SizedBox(width: 12),
+
+                // Time
                 Expanded(
-                  child: GestureDetector(
+                  child: TextField(
+                    readOnly: true,
                     onTap: _pickTime,
-                    child: Container(
-                      padding: const EdgeInsets.all(14),
-                      decoration: BoxDecoration(
-                        color: const Color(0xfff5f5f5),
+                    enabled: true,
+                    decoration: InputDecoration(
+                      hintText: "Pick time",
+                      filled: true,
+                      fillColor: const Color(0xfff5f5f5),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 14),
+                      border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide.none,
                       ),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.access_time,
-                            color: Colors.deepOrange,
-                            size: 20,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            selectedTime != null
-                                ? selectedTime!.format(context)
-                                : "Pick time",
-                            style: const TextStyle(
-                              color: Color(0xff555555),
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
+                      prefixIcon: const Icon(
+                        Icons.access_time,
+                        color: Colors.deepOrange,
                       ),
+                    ),
+                    controller: TextEditingController(
+                      text: selectedTime != null
+                          ? selectedTime!.format(context)
+                          : '',
                     ),
                   ),
                 ),
               ],
+            ),
+            const SizedBox(height: 20),
+
+            /// Category
+            TextField(
+              decoration: InputDecoration(
+                hintText: 'Select category',
+                filled: true,
+                fillColor: const Color(0xfff5f5f5),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide.none,
+                ),
+                prefixIcon: const Icon(
+                  Icons.category,
+                  color: Colors.deepOrange,
+                ),
+              ),
+              onTap: () async {
+                final selected = await showDialog<String>(
+                  context: context,
+                  builder: (_) => const CategorySheet(),
+                );
+
+                if (selected != null) {
+                  setState(
+                    () {
+                      selectedCategory = selected;
+                    },
+                  );
+                }
+              },
             ),
             const SizedBox(height: 30),
 
@@ -169,23 +210,39 @@ class _TaskSheetState extends State<TaskSheet> {
                 if (taskController.text.isEmpty) {
                   errors.add("Please enter a task title.");
                 }
-
-                if (selectedDate == null && selectedTime == null) {
+                if (selectedDate == null &&
+                    selectedTime == null &&
+                    selectedCategory == null) {
+                  errors.add("Please complete all fields.");
+                } else if (selectedDate == null && selectedTime == null) {
                   errors.add("Please select both date and time.");
+                } else if (selectedDate == null && selectedCategory == null) {
+                  errors.add("Please select both date and category.");
+                } else if (selectedTime == null && selectedCategory == null) {
+                  errors.add("Please select both time and category.");
                 } else if (selectedDate == null) {
                   errors.add("Please select a date.");
                 } else if (selectedTime == null) {
                   errors.add("Please select a time.");
+                } else if (selectedCategory == null) {
+                  errors.add("Please select a category.");
                 }
 
                 if (errors.isNotEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(errors.join('\n')),
-                      backgroundColor: Colors.deepOrange,
-                      duration: const Duration(seconds: 3),
+                  Flushbar(
+                    message: errors.join('\n'),
+                    backgroundColor: Colors.deepOrange,
+                    messageColor: Colors.white,
+                    icon: const Icon(
+                      Icons.error_outline,
+                      color: Colors.white,
                     ),
-                  );
+                    duration: const Duration(seconds: 4),
+                    flushbarPosition: FlushbarPosition.TOP,
+                    borderRadius: BorderRadius.circular(12),
+                    margin: const EdgeInsets.all(10),
+                    animationDuration: const Duration(milliseconds: 500),
+                  ).show(context);
                   return;
                 }
 
@@ -195,6 +252,7 @@ class _TaskSheetState extends State<TaskSheet> {
                     'title': taskController.text,
                     'date': selectedDate,
                     'time': selectedTime,
+                    'category': selectedCategory,
                   },
                 );
               },

@@ -13,9 +13,6 @@ Future<TimeOfDay?> showCustomCupertinoTimePicker(
 
   TimeOfDay? selectedTime = initialTime;
 
-  const themeColor = Color(0xfff7892b);
-  const backgroundColor = Color(0xffeeeeee);
-
   return showDialog<TimeOfDay>(
     context: context,
     builder: (BuildContext context) {
@@ -57,7 +54,7 @@ Future<TimeOfDay?> showCustomCupertinoTimePicker(
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
-                      color: backgroundColor,
+                      color: const Color(0xffeeeeee),
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: CupertinoDatePicker(
@@ -79,8 +76,8 @@ Future<TimeOfDay?> showCustomCupertinoTimePicker(
                   child: ElevatedButton(
                     onPressed: () => Navigator.pop(context, selectedTime),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: themeColor,
-                      foregroundColor: Colors.white,
+                      backgroundColor: const Color(0xfff7892b),
+                      foregroundColor: const Color(0xffeeeeee),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
