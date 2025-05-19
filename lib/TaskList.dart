@@ -15,26 +15,40 @@ class TaskList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (tasks.isEmpty) {
-      return const Text(
-        'No tasks yet. Add some!',
-        style: TextStyle(color: Colors.grey, fontSize: 16),
+      return const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.task_alt_outlined, size: 40, color: Colors.grey),
+            SizedBox(height: 10),
+            Text(
+              'No tasks yet. Add some!',
+              style: TextStyle(color: Colors.grey, fontSize: 16),
+            ),
+          ],
+        ),
       );
     }
 
-    return Column(
-      children: tasks.asMap().entries.map((entry) {
-        final index = entry.key;
-        final task = entry.value;
-
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: tasks.length,
+      itemBuilder: (context, index) {
+        final task = tasks[index];
         return Task(
+          key: ValueKey(
+            task.title + task.formattedDate + task.formattedTime(context),
+          ),
           title: task.title,
           time: task.formattedTime(context),
           date: task.formattedDate,
+          isChecked: task.isChecked,
           onDismissed: (dir) {
             onDismissed(index);
           },
         );
-      }).toList(),
+      },
     );
   }
 }

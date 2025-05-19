@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 class CategorySheet extends StatefulWidget {
   const CategorySheet({super.key});
@@ -17,6 +18,63 @@ class _CategorySheetState extends State<CategorySheet> {
     {"title": "Shopping", "color": Colors.orange},
     {"title": "Study", "color": Colors.purple},
   ];
+
+  void _showAddCategoryDialog() {
+    String newTitle = '';
+    Color newColor = Colors.teal;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setStateDialog) {
+            return AlertDialog(
+              title: const Text('Add Category'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    decoration:
+                        const InputDecoration(labelText: 'Category title'),
+                    onChanged: (value) => newTitle = value,
+                  ),
+                  const SizedBox(height: 10),
+                  BlockPicker(
+                    pickerColor: newColor,
+                    onColorChanged: (color) {
+                      setStateDialog(() {
+                        newColor = color;
+                      });
+                    },
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    if (newTitle.trim().isNotEmpty) {
+                      setState(() {
+                        categories.add({
+                          'title': newTitle,
+                          'color': newColor,
+                        });
+                      });
+                    }
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Add'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,29 +105,31 @@ class _CategorySheetState extends State<CategorySheet> {
               spacing: 10,
               runSpacing: 10,
               children: [
-                ...categories.map((category) {
-                  final isSelected = selectedCategory == category['title'];
-                  return ChoiceChip(
-                    label: Text(category['title']),
-                    selected: isSelected,
-                    backgroundColor: Colors.grey[200],
-                    selectedColor: category['color'].withOpacity(0.2),
-                    labelStyle: TextStyle(
-                      color: isSelected ? category['color'] : Colors.black,
-                    ),
-                    avatar: CircleAvatar(
-                      backgroundColor: category['color'],
-                      radius: 8,
-                    ),
-                    onSelected: (_) {
-                      setState(() {
-                        selectedCategory = category['title'];
-                      });
-                    },
-                  );
-                }).toList(),
-
-                /// دکمه افزودن دسته جدید
+                ...categories.map(
+                  (category) {
+                    final isSelected = selectedCategory == category['title'];
+                    return ChoiceChip(
+                      label: Text(category['title']),
+                      selected: isSelected,
+                      backgroundColor: Colors.grey[200],
+                      selectedColor: category['color'].withOpacity(0.2),
+                      labelStyle: TextStyle(
+                        color: isSelected ? category['color'] : Colors.black,
+                      ),
+                      avatar: CircleAvatar(
+                        backgroundColor: category['color'],
+                        radius: 8,
+                      ),
+                      onSelected: (_) {
+                        setState(
+                          () {
+                            selectedCategory = category['title'];
+                          },
+                        );
+                      },
+                    );
+                  },
+                ).toList(),
                 GestureDetector(
                   onTap: _showAddCategoryDialog,
                   child: Container(
@@ -103,10 +163,7 @@ class _CategorySheetState extends State<CategorySheet> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.pop(
-                    context,
-                    Navigator.pop(context, selectedCategory);
-                  );
+                  Navigator.pop(context, selectedCategory);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xfff7892b),
