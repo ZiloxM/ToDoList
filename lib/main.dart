@@ -1,11 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:todo_list/home_page.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:todo_list/task_database.dart';
+import 'package:todo_list/task_model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await Hive.initFlutter();
-  await Hive.openBox('tasks');
+
+  Hive.registerAdapter(
+    TaskModelAdapter(),
+  );
+
+  await Hive.openBox<TaskModel>('tasksBox');
+
+  await TaskDatabase.instance.init();
+
   runApp(
     const MyApp(),
   );

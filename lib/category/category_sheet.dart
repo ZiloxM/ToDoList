@@ -11,17 +11,18 @@ class CategorySheet extends StatefulWidget {
 class _CategorySheetState extends State<CategorySheet> {
   int selectedIndex = 0;
 
+  String? hoveredCategory;
   String? selectedCategory;
   List<Map<String, dynamic>> categories = [
     {"title": "Work", "color": Colors.blue},
     {"title": "Personal", "color": Colors.green},
-    {"title": "Shopping", "color": Colors.orange},
+    {"title": "Meeting", "color": Colors.orange},
     {"title": "Study", "color": Colors.purple},
   ];
 
   void _showAddCategoryDialog() {
     String newTitle = '';
-    Color newColor = Colors.teal;
+    Color newColor = Colors.red;
 
     showDialog(
       context: context,
@@ -29,44 +30,110 @@ class _CategorySheetState extends State<CategorySheet> {
         return StatefulBuilder(
           builder: (context, setStateDialog) {
             return AlertDialog(
-              title: const Text('Add Category'),
+              backgroundColor: Colors.grey.shade100,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              title: const Text(
+                'Add Category',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xff333333),
+                  fontSize: 22,
+                ),
+              ),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   TextField(
-                    decoration:
-                        const InputDecoration(labelText: 'Category title'),
+                    decoration: InputDecoration(
+                      labelText: 'Category title',
+                      labelStyle: const TextStyle(
+                        color: Color(0xff333333),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(
+                          color: Color(0xff333333),
+                          width: 2,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(
+                          color: Color(0xff333333),
+                          width: 1,
+                        ),
+                      ),
+                    ),
                     onChanged: (value) => newTitle = value,
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 15),
                   BlockPicker(
                     pickerColor: newColor,
                     onColorChanged: (color) {
-                      setStateDialog(() {
-                        newColor = color;
-                      });
+                      setStateDialog(
+                        () {
+                          newColor = color;
+                        },
+                      );
                     },
                   ),
                 ],
               ),
+              actionsPadding:
+                  const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
               actions: [
                 TextButton(
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.deepOrange.shade400,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 25,
+                      vertical: 12,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Cancel'),
+                  child: const Text(
+                    'Cancel',
+                    style: TextStyle(fontSize: 16),
+                  ),
                 ),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xfff7892b),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 25, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 5,
+                  ),
                   onPressed: () {
                     if (newTitle.trim().isNotEmpty) {
-                      setState(() {
-                        categories.add({
-                          'title': newTitle,
-                          'color': newColor,
-                        });
-                      });
+                      setState(
+                        () {
+                          categories.add(
+                            {
+                              'title': newTitle,
+                              'color': newColor,
+                            },
+                          );
+                        },
+                      );
                     }
                     Navigator.pop(context);
                   },
-                  child: const Text('Add'),
+                  child: const Text(
+                    'Add',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
               ],
             );
@@ -79,6 +146,7 @@ class _CategorySheetState extends State<CategorySheet> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
+      backgroundColor: Colors.white,
       insetPadding: const EdgeInsets.symmetric(
         horizontal: 20,
         vertical: 40,
@@ -108,41 +176,77 @@ class _CategorySheetState extends State<CategorySheet> {
                 ...categories.map(
                   (category) {
                     final isSelected = selectedCategory == category['title'];
-                    return ChoiceChip(
-                      label: Text(category['title']),
-                      selected: isSelected,
-                      backgroundColor: Colors.grey[200],
-                      selectedColor: category['color'].withOpacity(0.2),
-                      labelStyle: TextStyle(
-                        color: isSelected ? category['color'] : Colors.black,
+                    return MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(
+                            () {
+                              selectedCategory = category['title'];
+                            },
+                          );
+                        },
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 250),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color:
+                                  isSelected ? category['color'] : Colors.white,
+                              width: 2,
+                            ),
+                            color: isSelected
+                                ? category['color'].withOpacity(0.15)
+                                : Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.circle,
+                                size: 12,
+                                color: category['color'],
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                category['title'],
+                                style: TextStyle(
+                                  color: isSelected
+                                      ? category['color'].shade800
+                                      : Colors.black,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-                      avatar: CircleAvatar(
-                        backgroundColor: category['color'],
-                        radius: 8,
-                      ),
-                      onSelected: (_) {
-                        setState(
-                          () {
-                            selectedCategory = category['title'];
-                          },
-                        );
-                      },
                     );
                   },
-                ).toList(),
-                GestureDetector(
+                ),
+                InkWell(
                   onTap: _showAddCategoryDialog,
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 10),
+                      horizontal: 14,
+                      vertical: 10,
+                    ),
                     decoration: BoxDecoration(
-                      color: Colors.grey[200],
+                      color: Colors.white,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: const Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.add, color: Colors.deepOrange, size: 20),
+                        Icon(
+                          Icons.add,
+                          color: Colors.deepOrange,
+                          size: 20,
+                        ),
                         SizedBox(width: 6),
                         Text(
                           "Add",
@@ -159,6 +263,8 @@ class _CategorySheetState extends State<CategorySheet> {
             ),
 
             const SizedBox(height: 20),
+
+            /// Confirm
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(

@@ -167,38 +167,71 @@ class _TaskSheetState extends State<TaskSheet> {
             const SizedBox(height: 20),
 
             /// Category
-            TextField(
-              decoration: InputDecoration(
-                hintText: 'Select category',
-                filled: true,
-                fillColor: const Color(0xfff5f5f5),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 14,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide.none,
-                ),
-                prefixIcon: const Icon(
-                  Icons.category,
-                  color: Colors.deepOrange,
-                ),
-              ),
-              onTap: () async {
-                final selected = await showDialog<String>(
-                  context: context,
-                  builder: (_) => const CategorySheet(),
-                );
+            Row(
+              children: [
+                Expanded(
+                  flex: 7,
+                  child: TextField(
+                    decoration: InputDecoration(
+                      hintText: 'Select category',
+                      filled: true,
+                      fillColor: const Color(0xfff5f5f5),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide.none,
+                      ),
+                      prefixIcon: const Icon(
+                        Icons.category,
+                        color: Colors.deepOrange,
+                      ),
+                    ),
+                    onTap: () async {
+                      final selected = await showDialog<String>(
+                        context: context,
+                        builder: (_) => const CategorySheet(),
+                      );
 
-                if (selected != null) {
-                  setState(
-                    () {
-                      selectedCategory = selected;
+                      if (selected != null) {
+                        setState(
+                          () {
+                            selectedCategory = selected;
+                          },
+                        );
+                      }
                     },
-                  );
-                }
-              },
+                  ),
+                ),
+
+                const SizedBox(width: 12),
+
+                /// Alarm
+                Expanded(
+                  flex: 3,
+                  child: TextField(
+                    decoration: InputDecoration(
+                      hintText: "Alarm",
+                      filled: true,
+                      fillColor: const Color(0xfff5f5f5),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide.none,
+                      ),
+                      prefixIcon: const Icon(
+                        Icons.alarm_add_outlined,
+                        color: Colors.deepOrange,
+                      ),
+                    ),
+                  ),
+                )
+              ],
             ),
             const SizedBox(height: 30),
 
